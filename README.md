@@ -2,7 +2,7 @@
 
 Sistema de Restaurante
 
-Trabalho da metéria de Gerência de Software
+Trabalho da matéria de Gerência de Configuração
 
 - Cauã Vermieiro - 802.558
 - Felipe Casali - 802.483
