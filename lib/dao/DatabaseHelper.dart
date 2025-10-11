@@ -32,6 +32,8 @@ class DatabaseHelper {
       onCreate: (db, version) async {
         await db.execute(clienteTableDDL);
         await db.execute(pedidoTableDDL);
+        await db.execute(produtoTableDDL);
+        await db.execute(item_pedidoTableDDL);
       }
     );
   }
@@ -56,6 +58,28 @@ class DatabaseHelper {
       metodoPagamento TEXT NOT NULL,
       observacoes TEXT,
       FOREIGN KEY (clienteId) REFERENCES cliente(id) ON DELETE CASCADE
+    )
+  ''';
+  
+  static const String produtoTableDDL = '''
+    CREATE TABLE produto(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nome TEXT NOT NULL,
+      preco REAL NOT NULL,
+      categoria TEXT NOT NULL,
+      descricao TEXT
+    )
+  ''';
+  
+  static const String item_pedidoTableDDL = '''
+    CREATE TABLE item_pedido(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      pedidoId INTEGER NOT NULL,
+      produtoId INTEGER NOT NULL,
+      quantidade INTEGER NOT NULL,
+      precoUnitario REAL NOT NULL,
+      FOREIGN KEY (pedidoId) REFERENCES pedido(id) ON DELETE CASCADE,
+      FOREIGN KEY (produtoId) REFERENCES produto(id)
     )
   ''';
 }
