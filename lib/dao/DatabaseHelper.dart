@@ -26,10 +26,13 @@ class DatabaseHelper {
     return await openDatabase(
       path,
       version: 1,
-      onCreate: (db, version) async {
-        db.execute(clienteTableDDL);
-        db.execute(pedidoTableDDL);
+      onConfigure: (db) async {
+        await db.execute('PRAGMA foreign_keys = ON');
       },
+      onCreate: (db, version) async {
+        await db.execute(clienteTableDDL);
+        await db.execute(pedidoTableDDL);
+      }
     );
   }
 
@@ -46,7 +49,13 @@ class DatabaseHelper {
   static const String pedidoTableDDL = '''
     CREATE TABLE pedido(
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      
+      clienteId INTEGER NOT NULL,
+      dataHora TEXT NOT NULL,
+      status TEXT NOT NULL,
+      valorTotal REAL NOT NULL,
+      metodoPagamento TEXT NOT NULL,
+      observacoes TEXT,
+      FOREIGN KEY (clienteId) REFERENCES cliente(id) ON DELETE CASCADE
     )
   ''';
 }
