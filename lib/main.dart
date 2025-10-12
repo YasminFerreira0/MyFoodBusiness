@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'pages/pedidos_list_page.dart';
 
 void main() {
 	runApp(MyApp());
@@ -17,9 +16,3 @@ class MyApp extends StatelessWidget {
 		);
 	}
 }
-/*routes: {
-        '/': (context) => const HomePage(), // tela home
-        '/pedidos': (context) => const PedidosListPage(), // listpage
-      },*/
-
-/*Navigator.pushNamed(context, '/pedidos'); //chama a tela de listagem */
