@@ -14,7 +14,8 @@ class Pedido {
     required this.status,
     required this.valorTotal,
     required this.metodoPagamento,
-    this.observacoes,
+    this.observacoes
+    //required String descricao, required double valor, required DateTime data,
   });
 
   Map<String, dynamic> toMap() {

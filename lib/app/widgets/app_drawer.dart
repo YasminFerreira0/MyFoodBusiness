@@ -1,4 +1,6 @@
+import 'package:app/app/pages/cadastro_pedido.dart';
 import 'package:flutter/material.dart';
+import '../pages/cadastro_cliente.dart';
 
 class MeuDrawer extends Drawer {
   MeuDrawer({super.key});
@@ -23,6 +25,26 @@ class MeuDrawer extends Drawer {
               Navigator.pushNamed(context, '/home');
             },
           ),
+          ListTile(
+            leading: Icon(Icons.person_add),
+            title: Text('Cadastro de Cliente'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CadastroCliente()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.add_shopping_cart),
+            title: Text('Cadastro de Pedido'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CadastroPedido()),
+              );
+            },
+          )
         ],
       ),
     );
