@@ -82,5 +82,4 @@ class DatabaseHelper {
       FOREIGN KEY (produtoId) REFERENCES produto(id)
     )
   ''';
-
 }
