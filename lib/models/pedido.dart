@@ -1,6 +1,7 @@
 class Pedido {
   int? id;
-  int clienteId;
+  int? numeroMesa;
+  int? clienteId;
   DateTime dataHora;
   String status;
   double valorTotal;
@@ -9,7 +10,8 @@ class Pedido {
 
   Pedido({
     this.id,
-    required this.clienteId,
+    this.numeroMesa,
+    this.clienteId,
     required this.dataHora,
     required this.status,
     required this.valorTotal,
@@ -20,6 +22,7 @@ class Pedido {
   Map<String, dynamic> toMap() {
     return {
       "id": id,
+      "numeroMesa": numeroMesa,
       "clienteId": clienteId,
       "dataHora": dataHora.toIso8601String(),
       "status": status,
@@ -32,6 +35,7 @@ class Pedido {
   static Pedido fromMap(Map<String, dynamic> map) {
     return Pedido(
       id: map["id"],
+      numeroMesa: map["numeroMesa"],
       clienteId: map["clienteId"],
       dataHora: DateTime.parse(map["dataHora"]),
       status: map["status"],

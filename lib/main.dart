@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pages/pedidos_list_page.dart';
+import 'pages/pedidos_list.dart';
 
 void main() {
 	runApp(MyApp());
