@@ -1,13 +1,13 @@
 class ItemPedido {
   int? id;
-  int pedidoId;
+  int? pedidoId;
   int produtoId;
   int quantidade;
   double precoUnitario;
 
   ItemPedido({
     this.id,
-    required this.pedidoId,
+    this.pedidoId,
     required this.produtoId,
     required this.quantidade,
     required this.precoUnitario

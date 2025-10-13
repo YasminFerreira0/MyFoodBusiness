@@ -1,8 +1,10 @@
+import 'package:app/models/categoria_produto.dart';
+
 class Produto {
   int? id;
   String nome;
   double preco;
-  String categoria;
+  CategoriaProduto categoria;
   String? descricao;
   
   Produto({
@@ -18,7 +20,7 @@ class Produto {
       "id": id,
       "nome": nome,
       "preco": preco,
-      "categoria": categoria,
+      "categoria": categoria.name,
       "descricao": descricao
     };
   }
@@ -28,7 +30,7 @@ class Produto {
       id: map["id"],
       nome: map["nome"],
       preco: map["preco"],
-      categoria: map["categoria"],
+      categoria: CategoriaProduto.values.byName(map["categoria"]),
       descricao: map["descricao"]
     );
   }
