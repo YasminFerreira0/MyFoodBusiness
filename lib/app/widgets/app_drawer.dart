@@ -12,13 +12,18 @@ class MeuDrawer extends Drawer {
           DrawerHeader(
             decoration: BoxDecoration(color: Colors.red),
             child: Text(
-              'Menu',
-              style: TextStyle(color: Colors.white, fontSize: 24),
+              'My\nFood\nBusiness',
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Poppins',
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           ListTile(
             leading: Icon(Icons.home),
-            title: Text('Home'),
+            title: Text('Home', style: TextStyle(fontFamily: 'Poppins')),
             onTap: () {
               Navigator.pushNamed(context, '/home');
             },

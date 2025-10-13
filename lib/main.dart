@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'app/pages/splash_page.dart';
 import 'app/pages/home_page.dart';
 
 void main() {
@@ -17,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home: const SplashPage(),
+      home: const HomePage(),
       routes: {
         '/home': (context) => const HomePage(),
       },
