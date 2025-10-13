@@ -51,7 +51,8 @@ class DatabaseHelper {
   static const String pedidoTableDDL = '''
     CREATE TABLE pedido(
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      clienteId INTEGER NOT NULL,
+      numeroMesa INTEGER,
+      clienteId INTEGER,
       dataHora TEXT NOT NULL,
       status TEXT NOT NULL,
       valorTotal REAL NOT NULL,

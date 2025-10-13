@@ -1,6 +1,6 @@
-import 'package:app/data/dao/ItemPedidoDAO.dart';
+import 'package:app/data/dao/item_pedido_dao.dart';
 import 'package:flutter/material.dart';
-import 'package:app/models/ItemPedido.dart';
+import 'package:app/models/item_pedido.dart';
 
 class PedidosListPage extends StatefulWidget {
   const PedidosListPage({super.key});
@@ -30,7 +30,7 @@ class _PedidosListPageState extends State<PedidosListPage> {
 
   Future<void> _excluirPedido(int id) async {
     await _dao.delete(id);
-    _carregarPedidos(); // att a lista
+    _carregarPedidos();
   }
 
   @override
