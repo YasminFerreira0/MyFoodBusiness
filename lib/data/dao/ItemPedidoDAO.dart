@@ -1,4 +1,4 @@
-import 'package:app/dao/DatabaseHelper.dart';
+import 'package:app/data/DatabaseHelper.dart';
 import 'package:app/models/ItemPedido.dart';
 import 'package:sqflite/sqflite.dart';
 
