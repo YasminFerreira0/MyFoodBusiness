@@ -1,11 +1,13 @@
+import 'package:app/controllers/produto_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/widgets/app_drawer.dart';
 
-import '../../data/dao/produto_dao.dart';
 import '../../models/produto.dart';
 import '../../models/categoria_produto.dart';
 
 class CadastroProduto extends StatefulWidget {
+  const CadastroProduto({super.key});
+
   @override
   _CadastroProdutoState createState() => _CadastroProdutoState();
 }
@@ -16,7 +18,7 @@ class _CadastroProdutoState extends State<CadastroProduto> {
   final TextEditingController _precoController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
 
-  final ProdutoDAO _produtoDAO = ProdutoDAO();
+  final ProdutoController _produtoController = ProdutoController();
   CategoriaProduto? _categoriaSelecionada;
 
   void _salvarProduto() async {
@@ -31,7 +33,7 @@ class _CadastroProdutoState extends State<CadastroProduto> {
         descricao: _descricaoController.text,
       );
 
-      await _produtoDAO.insert(produto);
+      await _produtoController.insert(produto);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Produto cadastrado com sucesso!')),
@@ -99,8 +101,7 @@ class _CadastroProdutoState extends State<CadastroProduto> {
                   return DropdownMenuItem(
                     value: categoria,
                     child: Text(
-                      categoria.name[0].toUpperCase() +
-                          categoria.name.substring(1),
+                      categoria.label,
                     ),
                   );
                 }).toList(),

@@ -1,7 +1,9 @@
+import 'package:app/controllers/produto_controller.dart';
+import 'package:app/models/produto.dart';
 import 'package:flutter/material.dart';
 import 'package:app/controllers/pedido_controller.dart';
 import 'package:app/models/item_pedido.dart';
-import 'package:app/utils/calcula_valor_total.dart';
+import 'package:app/utils/utils.dart';
 
 import '../../models/pedido.dart';
 import '../widgets/app_drawer.dart';
@@ -17,6 +19,7 @@ class _CadastroPedidoState extends State<CadastroPedido> {
   final _formKey = GlobalKey<FormState>();
 
   final _pedidoController = PedidoController();
+  final _produtoController = ProdutoController();
 
   final _numeroMesaController = TextEditingController();
   final _clienteIdController = TextEditingController();
@@ -108,8 +111,8 @@ class _CadastroPedidoState extends State<CadastroPedido> {
                 final produtoId = int.parse(produtoIdController.text);
                 final quantidade = int.parse(quantidadeController.text);
 
-                // 🔹 Usa o util para buscar o preço do produto
-                final preco = await CalculaValorTotal.buscarPrecoProduto(produtoId);
+                final Produto? p = await _produtoController.getProdutoById(produtoId);
+                final preco = p?.preco;
                 if (preco == null || preco <= 0) {
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -161,8 +164,8 @@ class _CadastroPedidoState extends State<CadastroPedido> {
         .toList();
 
     // 🔹 Calcula o total do pedido via util
-    final valorTotalCalculado =
-        await CalculaValorTotal.calcularPedido(itensParaUtil);
+    final _utils = Utils();
+    final valorTotalCalculado = await _utils.calcularPedido(itensParaUtil);
 
     final novoPedido = Pedido(
       numeroMesa: _numeroMesaController.text.isNotEmpty

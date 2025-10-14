@@ -1,3 +1,4 @@
+import 'package:app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:app/controllers/item_pedido_controller.dart';
 import 'package:app/models/item_pedido.dart';
@@ -134,7 +135,7 @@ class _PedidosListPageState extends State<PedidosListPage> {
                         tilePadding: const EdgeInsets.symmetric(horizontal: 16),
                         title: Text('Pedido #$pedidoId'),
                         subtitle: Text(
-                          '${itens.length} item(ns) • Total: R\$ ${total.toStringAsFixed(2)}',
+                          '${Utils.calcTotalItensPorPedido(itens)} itens(m) • Total: R\$ ${total.toStringAsFixed(2)}',
                         ),
                         trailing: IconButton(
                           icon: const Icon(Icons.delete, color: Colors.red),
@@ -160,7 +161,7 @@ class _PedidosListPageState extends State<PedidosListPage> {
                                         ),
                                       ),
                                       Text(
-                                        'R\$ ${item.precoUnitario.toStringAsFixed(2)}',
+                                        'R\$ ${(item.precoUnitario*item.quantidade).toStringAsFixed(2)}',
                                         style: const TextStyle(fontWeight: FontWeight.w600),
                                       ),
                                     ],

@@ -123,8 +123,8 @@ class _ProdutoListPageState extends State<ProdutoListPage> {
         final id = p.id?.toString() ?? '?';
         final nome = p.nome.isNotEmpty ? p.nome : '(Sem nome)';
         final preco = (p.preco as num).toDouble();
-        final categoria = p.categoria;
-        final desc = p.descricao ?? 'Sem descrição';
+        final categoria = p.categoria.label;
+        final desc = p.descricao ?? 'Sem descrição';  
 
         return Card(
           elevation: 3,
@@ -138,8 +138,8 @@ class _ProdutoListPageState extends State<ProdutoListPage> {
               vertical: 10,
             ),
             leading: CircleAvatar(
-              backgroundColor: Colors.deepPurple.shade100,
-              child: Text(id, style: const TextStyle(color: Colors.red)),
+              backgroundColor: Colors.red,
+              child: Text(id, style: const TextStyle(color: Colors.white),),
             ),
             title: Text(
               nome,
