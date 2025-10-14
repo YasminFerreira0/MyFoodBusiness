@@ -5,6 +5,15 @@ import 'package:flutter/rendering.dart';
 class ProdutoController {
   final ProdutoDAO _dao = ProdutoDAO();
 
+  Future<Produto?> getProdutoById(int id) async {
+    try {
+      return await _dao.getProdutoById(id);
+    } catch (e, stackTrace) {
+      debugPrint("[ERROR] Erro de query: $e\n$stackTrace");
+      return null;
+    }
+  }
+
   Future<int?> insert(Produto produto) async {
     try {
       return await _dao.insert(produto);

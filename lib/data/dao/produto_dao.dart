@@ -3,6 +3,19 @@ import 'package:app/models/produto.dart';
 import 'package:sqflite/sqflite.dart';
 
 class ProdutoDAO {
+  Future<Produto> getProdutoById(int id) async {
+    final Database db = await DatabaseHelper.instance.database;
+
+    List<Map<String, dynamic>> query = await db.query(
+      'produto',
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+    Produto p = Produto.fromMap(query.first);
+    return p;
+  }
+
   Future<int> insert(Produto produto) async {
     final Database db = await DatabaseHelper.instance.database;
     return await db.insert(
