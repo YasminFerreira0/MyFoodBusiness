@@ -1,5 +1,5 @@
-import 'package:app/dao/ClienteDAO.dart';
-import 'package:app/models/Cliente.dart';
+import '../../data/dao/cliente_dao.dart';
+import '../../models/cliente.dart';
 import 'package:flutter/material.dart';
 import '../widgets/app_drawer.dart';
 

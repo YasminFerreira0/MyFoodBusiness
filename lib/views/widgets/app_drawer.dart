@@ -1,5 +1,7 @@
-import 'package:app/app/pages/cadastro_pedido.dart';
-import 'package:app/app/pages/cadastro_produto.dart';
+import 'package:app/views/pages/cadastro_pedido.dart';
+import 'package:app/views/pages/cadastro_produto.dart';
+import 'package:app/views/pages/listagem_pedidos.dart';
+import 'package:app/views/pages/listagem_produtos.dart';
 import 'package:flutter/material.dart';
 import '../pages/cadastro_cliente.dart';
 
@@ -51,6 +53,20 @@ class MeuDrawer extends Drawer {
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => CadastroProduto()));
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.list),
+            title: Text('Listagem de Pedidos'),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => PedidosListPage()));
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.list),
+            title: Text('Listagem de Produtos'),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ProdutoListPage()));
             },
           ),
         ],
