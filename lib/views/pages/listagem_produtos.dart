@@ -121,11 +121,9 @@ class _ProdutoListPageState extends State<ProdutoListPage> {
         final p = _produtos[index];
 
         final id = p.id?.toString() ?? '?';
-        final nome = p.nome ?? '(Sem nome)';
-        final preco = (p.preco is num)
-            ? (p.preco as num).toDouble()
-            : double.tryParse('${p.preco}') ?? 0.0;
-        final categoria = p.categoria ?? 'Sem categoria';
+        final nome = p.nome.isNotEmpty ? p.nome : '(Sem nome)';
+        final preco = (p.preco as num).toDouble();
+        final categoria = p.categoria;
         final desc = p.descricao ?? 'Sem descrição';
 
         return Card(
