@@ -31,6 +31,14 @@ class ItemPedidoDAO {
     );
   }
 
+  Future<List<ItemPedido>> getItensByPedidoId(int id) async {
+    final Database db = await DatabaseHelper.instance.database;
+    List<Map<String, dynamic>> itemPedidos = await db.query( 'item_pedido', where: 'pedidoId = ?', whereArgs: [id]);
+    return List.generate(itemPedidos.length, (i) {
+      return ItemPedido.fromMap(itemPedidos[i]);
+    });
+  }
+
   Future<List<ItemPedido>> list() async {
     final Database db = await DatabaseHelper.instance.database;
     List<Map<String, dynamic>> itemPedidos = await db.query('item_pedido');

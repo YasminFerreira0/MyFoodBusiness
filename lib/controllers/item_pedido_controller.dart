@@ -34,6 +34,15 @@ class ItemPedidoController {
     }
   }
 
+  Future<List<ItemPedido>> getItensByPedidoId(int id) async {
+    try {
+      return await _dao.getItensByPedidoId(id);
+    } catch (e, stackTrace) {
+      debugPrint("[ERROR] Erro de query: $e\n$stackTrace");
+      return [];
+    }
+  }
+
   Future<List<ItemPedido>> list() async {
     try {
       return await _dao.list();
