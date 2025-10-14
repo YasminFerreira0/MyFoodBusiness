@@ -1,5 +1,4 @@
 import 'package:app/views/pages/cadastro_pedido.dart';
-import 'package:app/views/pages/cadastro_produto.dart';
 import 'package:app/views/pages/listagem_pedidos.dart';
 import 'package:app/views/pages/listagem_produtos.dart';
 import 'package:flutter/material.dart';
@@ -14,15 +13,20 @@ class MeuDrawer extends Drawer {
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: BoxDecoration(color: Colors.red),
+            decoration: BoxDecoration(color: Color(0xffD44B4B)),
             child: Text(
-              'Menu',
-              style: TextStyle(color: Colors.white, fontSize: 24),
+              'My\nFood\nBusiness',
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Poppins',
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           ListTile(
             leading: Icon(Icons.home),
-            title: Text('Home'),
+            title: Text('Home', style: TextStyle(fontFamily: 'Poppins')),
             onTap: () {
               Navigator.pushNamed(context, '/home');
             },
@@ -45,14 +49,6 @@ class MeuDrawer extends Drawer {
                 context,
                 MaterialPageRoute(builder: (context) => CadastroPedido()),
               );
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.inventory),
-            title: Text('Cadastro de Produto'),
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => CadastroProduto()));
             },
           ),
           ListTile(

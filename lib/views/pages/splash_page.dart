@@ -11,34 +11,28 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-
-    // Espera 2 segundos e vai para a Home
     Future.delayed(const Duration(seconds: 2), () {
+      if (!mounted) return;
       Navigator.pushReplacementNamed(context, '/home');
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.red,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.fastfood, size: 100, color: Colors.white),
-            SizedBox(height: 20),
-            Text(
-              'MyFoodBusiness',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w900, // bem negrito
-                fontFamily: 'sans-serif', // nativa
-                letterSpacing: 1.5, // um pouco de espaçamento
-                color: Colors.white,
-              ),
-            ),
-          ],
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: const Color(0xffbc5e5e),
+      child: Center(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Image.asset(
+              'assets/images/LogoMFB.png',
+              width: constraints.maxWidth,
+              height: constraints.maxHeight, 
+              fit: BoxFit.contain,
+            );
+          },
         ),
       ),
     );
