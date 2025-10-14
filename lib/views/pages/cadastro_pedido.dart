@@ -1,9 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:app/controllers/pedido_controller.dart';
 import 'package:app/models/item_pedido.dart';
 import 'package:app/utils/calcula_valor_total.dart';
 
 import '../../models/pedido.dart';
-import 'package:flutter/material.dart';
 import '../widgets/app_drawer.dart';
 
 class CadastroPedido extends StatefulWidget {
@@ -15,6 +15,7 @@ class CadastroPedido extends StatefulWidget {
 
 class _CadastroPedidoState extends State<CadastroPedido> {
   final _formKey = GlobalKey<FormState>();
+
   final _pedidoController = PedidoController();
 
   final _numeroMesaController = TextEditingController();
@@ -26,15 +27,11 @@ class _CadastroPedidoState extends State<CadastroPedido> {
 
   final List<ItemPedido> _itensDoPedido = [];
 
+  // Total para exibir na UI (rápido); o salvo no banco vem do util.
   double get _totalGeral => _itensDoPedido.fold<double>(
-    0,
-    (soma, item) => soma + (item.precoUnitario * item.quantidade),
-  );
-
-  @override
-  void initState() {
-    super.initState();
-  }
+        0,
+        (soma, item) => soma + (item.precoUnitario * item.quantidade),
+      );
 
   @override
   void dispose() {
@@ -42,6 +39,21 @@ class _CadastroPedidoState extends State<CadastroPedido> {
     _clienteIdController.dispose();
     _observacoesController.dispose();
     super.dispose();
+  }
+
+  void _resetFormulario() {
+    FocusScope.of(context).unfocus(); // fecha teclado
+    _numeroMesaController.clear();
+    _clienteIdController.clear();
+    _observacoesController.clear();
+
+    setState(() {
+      _itensDoPedido.clear();
+      _statusSelecionado = 'Aberto';
+      _metodoPagamentoSelecionado = 'Dinheiro';
+    });
+
+    _formKey.currentState?.reset();
   }
 
   void _showAddItemDialog() {
@@ -66,19 +78,17 @@ class _CadastroPedidoState extends State<CadastroPedido> {
                       labelText: 'ID do Produto',
                     ),
                     keyboardType: TextInputType.number,
-                    validator: (value) => value == null || value.isEmpty
-                        ? 'Campo obrigatório'
-                        : null,
+                    validator: (value) =>
+                        value == null || value.isEmpty ? 'Campo obrigatório' : null,
                   ),
                   TextFormField(
                     controller: quantidadeController,
                     decoration: const InputDecoration(labelText: 'Quantidade'),
                     keyboardType: TextInputType.number,
                     validator: (value) {
-                      if (value == null || value.isEmpty)
-                        return 'Campo obrigatório';
-                      if (int.tryParse(value) == null || int.parse(value) <= 0)
-                        return 'Quantidade inválida';
+                      if (value == null || value.isEmpty) return 'Campo obrigatório';
+                      final q = int.tryParse(value);
+                      if (q == null || q <= 0) return 'Quantidade inválida';
                       return null;
                     },
                   ),
@@ -98,16 +108,13 @@ class _CadastroPedidoState extends State<CadastroPedido> {
                 final produtoId = int.parse(produtoIdController.text);
                 final quantidade = int.parse(quantidadeController.text);
 
-                // busca o preço automaticamente
-                final preco = await CalculaValorTotal.buscarPrecoProduto(
-                  produtoId,
-                );
+                // 🔹 Usa o util para buscar o preço do produto
+                final preco = await CalculaValorTotal.buscarPrecoProduto(produtoId);
                 if (preco == null || preco <= 0) {
+                  if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text(
-                        'Produto não encontrado ou sem preço cadastrado.',
-                      ),
+                      content: Text('Produto não encontrado ou sem preço cadastrado.'),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -117,7 +124,7 @@ class _CadastroPedidoState extends State<CadastroPedido> {
                 final newItem = ItemPedido(
                   produtoId: produtoId,
                   quantidade: quantidade,
-                  precoUnitario: preco, // vem do banco via CalculaValorTotal
+                  precoUnitario: preco, // preço vem do util
                 );
 
                 if (!context.mounted) return;
@@ -133,54 +140,66 @@ class _CadastroPedidoState extends State<CadastroPedido> {
   }
 
   Future<void> _salvarPedido() async {
-    if (_formKey.currentState!.validate()) {
-      if (_itensDoPedido.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Adicione pelo menos um item ao pedido!'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
+    if (!_formKey.currentState!.validate()) return;
 
-      // O valorTotal será calculado pelo controller, aqui passamos 0 como placeholder.
-      final novoPedido = Pedido(
-        numeroMesa: _numeroMesaController.text.isNotEmpty
-            ? int.parse(_numeroMesaController.text)
-            : null,
-        clienteId: _clienteIdController.text.isNotEmpty
-            ? int.parse(_clienteIdController.text)
-            : null,
-        dataHora: DateTime.now(),
-        status: _statusSelecionado,
-        valorTotal: 0, // O controller irá calcular e substituir
-        metodoPagamento: _metodoPagamentoSelecionado,
-        observacoes: _observacoesController.text,
+    if (_itensDoPedido.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Adicione pelo menos um item ao pedido!'),
+          backgroundColor: Colors.red,
+        ),
       );
+      return;
+    }
 
-      final pedidoId = await _pedidoController.insert(
-        novoPedido,
-        _itensDoPedido,
+    // 🔹 Monta a lista no formato exigido pelo util: [{produtoId, quantidade}, ...]
+    final itensParaUtil = _itensDoPedido
+        .map<Map<String, dynamic>>((i) => {
+              'produtoId': i.produtoId,
+              'quantidade': i.quantidade,
+            })
+        .toList();
+
+    // 🔹 Calcula o total do pedido via util
+    final valorTotalCalculado =
+        await CalculaValorTotal.calcularPedido(itensParaUtil);
+
+    final novoPedido = Pedido(
+      numeroMesa: _numeroMesaController.text.isNotEmpty
+          ? int.parse(_numeroMesaController.text)
+          : null,
+      clienteId: _clienteIdController.text.isNotEmpty
+          ? int.parse(_clienteIdController.text)
+          : null,
+      dataHora: DateTime.now(),
+      status: _statusSelecionado,
+      valorTotal: valorTotalCalculado, // total vindo do util
+      metodoPagamento: _metodoPagamentoSelecionado,
+      observacoes: _observacoesController.text,
+    );
+
+    final pedidoId = await _pedidoController.insert(
+      novoPedido,
+      _itensDoPedido,
+    );
+
+    if (!mounted) return;
+
+    if (pedidoId != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Pedido #$pedidoId salvo com sucesso!'),
+          backgroundColor: Colors.green,
+        ),
       );
-
-      if (pedidoId != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Pedido #$pedidoId salvo com sucesso!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-
-        FocusScope.of(context).unfocus(); // fecha o teclado
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Erro ao salvar o pedido.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      _resetFormulario(); // limpa tudo só após sucesso
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Erro ao salvar o pedido.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -199,10 +218,7 @@ class _CadastroPedidoState extends State<CadastroPedido> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Dados do Pedido',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
+              Text('Dados do Pedido', style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _numeroMesaController,
@@ -231,23 +247,14 @@ class _CadastroPedidoState extends State<CadastroPedido> {
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.info_outline),
                 ),
-                items:
-                    [
-                          'Aberto',
-                          'Em preparação',
-                          'Pronto',
-                          'Entregue',
-                          'Finalizado',
-                        ]
-                        .map(
-                          (label) => DropdownMenuItem(
-                            child: Text(label),
-                            value: label,
-                          ),
-                        )
-                        .toList(),
-                onChanged: (value) =>
-                    setState(() => _statusSelecionado = value!),
+                items: const [
+                  'Aberto',
+                  'Em preparação',
+                  'Pronto',
+                  'Entregue',
+                  'Finalizado',
+                ].map((label) => DropdownMenuItem(value: label, child: Text(label))).toList(),
+                onChanged: (value) => setState(() => _statusSelecionado = value!),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
@@ -257,17 +264,13 @@ class _CadastroPedidoState extends State<CadastroPedido> {
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.payment),
                 ),
-                items:
-                    ['Dinheiro', 'Cartão de Crédito', 'Cartão de Débito', 'Pix']
-                        .map(
-                          (label) => DropdownMenuItem(
-                            child: Text(label),
-                            value: label,
-                          ),
-                        )
-                        .toList(),
-                onChanged: (value) =>
-                    setState(() => _metodoPagamentoSelecionado = value!),
+                items: const [
+                  'Dinheiro',
+                  'Cartão de Crédito',
+                  'Cartão de Débito',
+                  'Pix',
+                ].map((label) => DropdownMenuItem(value: label, child: Text(label))).toList(),
+                onChanged: (value) => setState(() => _metodoPagamentoSelecionado = value!),
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -283,16 +286,9 @@ class _CadastroPedidoState extends State<CadastroPedido> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Itens do Pedido',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
+                  Text('Itens do Pedido', style: Theme.of(context).textTheme.titleLarge),
                   IconButton(
-                    icon: const Icon(
-                      Icons.add_circle,
-                      color: Colors.blue,
-                      size: 30,
-                    ),
+                    icon: const Icon(Icons.add_circle, color: Colors.blue, size: 30),
                     onPressed: _showAddItemDialog,
                   ),
                 ],
@@ -323,18 +319,11 @@ class _CadastroPedidoState extends State<CadastroPedido> {
                               children: [
                                 Text(
                                   'R\$ ${(item.quantidade * item.precoUnitario).toStringAsFixed(2)}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 IconButton(
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  ),
-                                  onPressed: () => setState(
-                                    () => _itensDoPedido.removeAt(index),
-                                  ),
+                                  icon: const Icon(Icons.delete, color: Colors.red),
+                                  onPressed: () => setState(() => _itensDoPedido.removeAt(index)),
                                 ),
                               ],
                             ),
@@ -342,7 +331,6 @@ class _CadastroPedidoState extends State<CadastroPedido> {
                         );
                       },
                     ),
-              // Mostra o total geral do pedido
               if (_itensDoPedido.isNotEmpty)
                 Align(
                   alignment: Alignment.centerRight,
@@ -351,28 +339,13 @@ class _CadastroPedidoState extends State<CadastroPedido> {
                     child: Text(
                       'Total do Pedido: R\$ ${_totalGeral.toStringAsFixed(2)}',
                       style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black87,
-                      ),
+                        fontSize: 18, fontWeight: FontWeight.w700, color: Colors.black87),
                     ),
                   ),
                 ),
-
               const SizedBox(height: 32),
               ElevatedButton.icon(
-                onPressed: () {
-                  _salvarPedido();
-                  _numeroMesaController.clear();
-                  _clienteIdController.clear();
-                  _observacoesController.clear();
-
-                  setState(() {
-                    _itensDoPedido.clear();
-                    _statusSelecionado = 'Aberto';
-                    _metodoPagamentoSelecionado = 'Dinheiro';
-                  });
-                },
+                onPressed: _salvarPedido,
                 icon: const Icon(Icons.save),
                 label: const Text('Salvar Pedido'),
                 style: ElevatedButton.styleFrom(
