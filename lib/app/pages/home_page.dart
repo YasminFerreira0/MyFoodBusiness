@@ -1,3 +1,5 @@
+import 'package:app/app/pages/cadastro_cliente.dart';
+import 'package:app/app/pages/cadastro_pedido.dart';
 import 'package:app/app/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -5,39 +7,52 @@ import 'package:flutter_svg/flutter_svg.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  //List<Produto> produtos = [];
-
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
     return Scaffold(
-      appBar: BuildAppBar(),
+      appBar: _buildAppBar(context),
       drawer: MeuDrawer(),
-      body: BotoesUtilitarios(context),
+      body: Column(
+        children: [
+          _botoesUtilitarios(context),
+          const SizedBox(height: 70),
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0),
+            child: Text(
+              'Recomendações',
+              style: theme.textTheme.headlineSmall,
+            ),
+          ),
+          const SizedBox(height: 15),
+          Container(),
+        ],
+      ),
     );
   }
 
-  Column BotoesUtilitarios(BuildContext context) {
+  Column _botoesUtilitarios(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _searchField(),
-        SizedBox(height: 20),
+        _searchField(context),
+        const SizedBox(height: 20),
         Column(
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 20.0),
               child: Text(
                 'Utilitários',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontFamily: 'Poppins',
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: theme.textTheme.headlineSmall, //do tema
               ),
             ),
-            SizedBox(height: 10),
-            Container(
+            const SizedBox(height: 10),
+            SizedBox(
               height: 100,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -48,49 +63,38 @@ class HomePage extends StatelessWidget {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => HomePage(),
-                            ),
+                            MaterialPageRoute(builder: (_) => const CadastroPedido()),
                           );
                         },
-                        child: Icon(Icons.fastfood),
+                        child: const Icon(Icons.fastfood),
+                        
                         style: ElevatedButton.styleFrom(
-                          shape: CircleBorder(),
-                          padding: EdgeInsets.all(20),
-                          backgroundColor: Color(0xffD44B4B),
-                          foregroundColor: Colors.white,
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(20),
                         ),
                       ),
-                      Text(
-                        'Cadastrar\n   Pratos',
-                        style: TextStyle(fontFamily: 'Poppins'),
+                      Text(' Cadastrar\nComandas',
+                        style: theme.textTheme.bodyMedium, 
                       ),
                     ],
                   ),
                   Column(
                     children: [
-                      Column(
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => HomePage(),
-                                ),
-                              );
-                            },
-                            child: Icon(Icons.food_bank),
-                            style: ElevatedButton.styleFrom(
-                              shape: CircleBorder(),
-                              padding: EdgeInsets.all(20),
-                              backgroundColor: Color(0xffD44B4B),
-                              foregroundColor: Colors.white,
-                            ),
-                          ),
-                          Text('Cadastrar\n Produtos',
-                              style: TextStyle(fontFamily: 'Poppins')),
-                        ],
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const HomePage()),
+                          );
+                        },
+                        child: const Icon(Icons.food_bank),
+                        style: ElevatedButton.styleFrom(
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(20),
+                        ),
+                      ),
+                      Text('Cadastrar\n   Pratos',
+                        style: theme.textTheme.bodyMedium, 
                       ),
                     ],
                   ),
@@ -103,60 +107,58 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _searchField() {
-    return const SizedBox(
+  Widget _searchField(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    return SizedBox(
       height: 70,
-      child: Padding(
-        padding: EdgeInsets.only(top: 30), // distância do AppBar
+      child: const Padding(
+        padding: EdgeInsets.only(top: 30),
         child: TextField(
           decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
             prefixIcon: Padding(
               padding: EdgeInsets.all(12.0),
               child: Icon(Icons.search),
             ),
             hintText: 'Pesquisar Petiscos...',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-              borderSide: BorderSide.none,
-            ),
           ),
         ),
       ),
     );
   }
 
-  AppBar BuildAppBar() {
+  AppBar _buildAppBar(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
     return AppBar(
       title: Text(
         'MyFoodBusiness',
-        style: TextStyle(
-          color: Colors.black87,
-          fontFamily: 'Poppins',
+        style: theme.textTheme.titleLarge?.copyWith(
           fontSize: 28,
           fontWeight: FontWeight.bold,
+          color: theme.appBarTheme.foregroundColor ?? cs.onSurface,
         ),
       ),
-      backgroundColor: Colors.white,
-      elevation: 0.0,
       centerTitle: true,
       leading: Builder(
         builder: (context) => GestureDetector(
-          onTap: () {
-            Scaffold.of(context).openDrawer();
-          },
+          onTap: () => Scaffold.of(context).openDrawer(),
           child: Container(
             margin: const EdgeInsets.all(8),
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: const Color(0xffF7F8F8),
+              color: cs.surfaceVariant,
               borderRadius: BorderRadius.circular(8),
             ),
             child: SvgPicture.asset(
               'assets/icons/align-left-svgrepo-com.svg',
               width: 24,
               height: 24,
+              colorFilter: ColorFilter.mode(
+                theme.appBarTheme.foregroundColor ?? cs.onSurface,
+                BlendMode.srcIn,
+              ),
             ),
           ),
         ),

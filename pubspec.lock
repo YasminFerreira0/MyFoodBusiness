@@ -304,7 +304,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.6"
-<<<<<<< HEAD
   typed_data:
     dependency: transitive
     description:
@@ -337,8 +336,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.19"
-=======
->>>>>>> 7648eb0053430df7caf5ed5a394e81a3efa2f444
   vector_math:
     dependency: transitive
     description:
@@ -355,7 +352,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "15.0.2"
-<<<<<<< HEAD
   web:
     dependency: transitive
     description:
@@ -375,8 +371,3 @@ packages:
 sdks:
   dart: ">=3.9.0 <4.0.0"
   flutter: ">=3.29.0"
-=======
-sdks:
-  dart: ">=3.9.0 <4.0.0"
-  flutter: ">=3.24.0"
->>>>>>> 7648eb0053430df7caf5ed5a394e81a3efa2f444

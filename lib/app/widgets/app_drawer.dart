@@ -6,13 +6,12 @@ class MeuDrawer extends Drawer {
   MeuDrawer({super.key});
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: BoxDecoration(color: Colors.red),
+            decoration: BoxDecoration(color: Color(0xffD44B4B)),
             child: Text(
               'My\nFood\nBusiness',
               style: TextStyle(
