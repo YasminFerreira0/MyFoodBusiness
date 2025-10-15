@@ -1,5 +1,6 @@
 import 'package:app/views/pages/cadastro_pedido.dart';
 import 'package:app/views/drawer/app_drawer.dart';
+import 'package:app/views/pages/cadastro_produto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -81,7 +82,7 @@ class HomePage extends StatelessWidget {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const HomePage()),
+                            MaterialPageRoute(builder: (_) => const CadastroProduto()),
                           );
                         },
                         child: const Icon(Icons.food_bank),
