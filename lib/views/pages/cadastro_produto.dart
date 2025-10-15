@@ -1,6 +1,6 @@
 import 'package:app/controllers/produto_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:app/views/widgets/app_drawer.dart';
+import 'package:app/views/drawer/app_drawer.dart';
 
 import '../../models/produto.dart';
 import '../../models/categoria_produto.dart';

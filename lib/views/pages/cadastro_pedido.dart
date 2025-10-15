@@ -6,7 +6,7 @@ import 'package:app/models/item_pedido.dart';
 import 'package:app/utils/utils.dart';
 
 import '../../models/pedido.dart';
-import '../widgets/app_drawer.dart';
+import '../drawer/app_drawer.dart';
 
 class CadastroPedido extends StatefulWidget {
   const CadastroPedido({super.key});

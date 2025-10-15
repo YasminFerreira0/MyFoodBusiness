@@ -1,5 +1,5 @@
 import 'package:app/views/pages/cadastro_pedido.dart';
-import 'package:app/views/widgets/app_drawer.dart';
+import 'package:app/views/drawer/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
