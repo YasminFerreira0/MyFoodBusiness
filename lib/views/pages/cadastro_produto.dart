@@ -36,7 +36,7 @@ class _CadastroProdutoState extends State<CadastroProduto> {
       await _produtoController.insert(produto);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Produto cadastrado com sucesso!')),
+        const SnackBar(content: Text('Item cadastrado com sucesso!')),
       );
 
       // Reseta o formulário (para limpar validações)
@@ -60,7 +60,7 @@ class _CadastroProdutoState extends State<CadastroProduto> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Cadastro de Produto')),
+      appBar: AppBar(title: const Text('Cadastro do Cardápio')),
       drawer: MeuDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -70,10 +70,10 @@ class _CadastroProdutoState extends State<CadastroProduto> {
             children: <Widget>[
               TextFormField(
                 controller: _nomeController,
-                decoration: const InputDecoration(labelText: 'Nome do Produto'),
+                decoration: const InputDecoration(labelText: 'Nome do Item'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor, insira o nome do produto';
+                    return 'Por favor, insira o nome do Item';
                   }
                   return null;
                 },
@@ -131,7 +131,7 @@ class _CadastroProdutoState extends State<CadastroProduto> {
                   _precoController.clear();
                   _descricaoController.clear();
                 },
-                child: const Text('Salvar Produto'),
+                child: const Text('Salvar Item do Cardápio'),
               ),
             ],
           ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:app/controllers/pedido_controller.dart';
 import 'package:app/models/item_pedido.dart';
 import 'package:app/utils/utils.dart';
+import 'package:app/views/pages/selecionar_itens_pedido.dart';
 
 import '../../models/pedido.dart';
 import '../drawer/app_drawer.dart';
@@ -32,9 +33,9 @@ class _CadastroPedidoState extends State<CadastroPedido> {
 
   // Total para exibir na UI (rápido); o salvo no banco vem do util.
   double get _totalGeral => _itensDoPedido.fold<double>(
-        0,
-        (soma, item) => soma + (item.precoUnitario * item.quantidade),
-      );
+    0,
+    (soma, item) => soma + (item.precoUnitario * item.quantidade),
+  );
 
   @override
   void dispose() {
@@ -59,87 +60,50 @@ class _CadastroPedidoState extends State<CadastroPedido> {
     _formKey.currentState?.reset();
   }
 
-  void _showAddItemDialog() {
-    final produtoIdController = TextEditingController();
-    final quantidadeController = TextEditingController();
-    final dialogFormKey = GlobalKey<FormState>();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Adicionar Item'),
-          content: Form(
-            key: dialogFormKey,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextFormField(
-                    controller: produtoIdController,
-                    decoration: const InputDecoration(
-                      labelText: 'ID do Produto',
-                    ),
-                    keyboardType: TextInputType.number,
-                    validator: (value) =>
-                        value == null || value.isEmpty ? 'Campo obrigatório' : null,
-                  ),
-                  TextFormField(
-                    controller: quantidadeController,
-                    decoration: const InputDecoration(labelText: 'Quantidade'),
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) return 'Campo obrigatório';
-                      final q = int.tryParse(value);
-                      if (q == null || q <= 0) return 'Quantidade inválida';
-                      return null;
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancelar'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (!dialogFormKey.currentState!.validate()) return;
-
-                final produtoId = int.parse(produtoIdController.text);
-                final quantidade = int.parse(quantidadeController.text);
-
-                final Produto? p = await _produtoController.getProdutoById(produtoId);
-                final preco = p?.preco;
-                if (preco == null || preco <= 0) {
-                  if (!context.mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Produto não encontrado ou sem preço cadastrado.'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                  return;
-                }
-
-                final newItem = ItemPedido(
-                  produtoId: produtoId,
-                  quantidade: quantidade,
-                  precoUnitario: preco, // preço vem do util
-                );
-
-                if (!context.mounted) return;
-                setState(() => _itensDoPedido.add(newItem));
-                Navigator.of(context).pop();
-              },
-              child: const Text('Adicionar'),
-            ),
-          ],
-        );
-      },
+  Future<void> _abrirSelecaoDeItens() async {
+    final selecionados = await Navigator.of(context).push<List<ItemPedido>>(
+      MaterialPageRoute(builder: (_) => const SelecionarItensPedidoPage()),
     );
+
+    if (!mounted) return;
+    if (selecionados == null || selecionados.isEmpty) return;
+
+    setState(() {
+      _mesclarItens(_itensDoPedido, selecionados);
+    });
+  }
+
+  /// Mescla itens por produtoId somando quantidades e mantendo o mesmo precoUnitario.
+  /// Se houver preços diferentes do mesmo produto (não deveria), mantém o do primeiro já existente.
+  void _mesclarItens(List<ItemPedido> destino, List<ItemPedido> novos) {
+    final mapa = <int, ItemPedido>{};
+    for (final item in destino) {
+      mapa[item.produtoId] = ItemPedido(
+        produtoId: item.produtoId,
+        quantidade: item.quantidade,
+        precoUnitario: item.precoUnitario,
+      );
+    }
+    for (final n in novos) {
+      final existente = mapa[n.produtoId];
+      if (existente == null) {
+        mapa[n.produtoId] = ItemPedido(
+          produtoId: n.produtoId,
+          quantidade: n.quantidade,
+          precoUnitario: n.precoUnitario,
+        );
+      } else {
+        mapa[n.produtoId] = ItemPedido(
+          produtoId: existente.produtoId,
+          quantidade: existente.quantidade + n.quantidade,
+          precoUnitario: existente.precoUnitario,
+        );
+      }
+    }
+
+    destino
+      ..clear()
+      ..addAll(mapa.values);
   }
 
   Future<void> _salvarPedido() async {
@@ -157,10 +121,9 @@ class _CadastroPedidoState extends State<CadastroPedido> {
 
     // 🔹 Monta a lista no formato exigido pelo util: [{produtoId, quantidade}, ...]
     final itensParaUtil = _itensDoPedido
-        .map<Map<String, dynamic>>((i) => {
-              'produtoId': i.produtoId,
-              'quantidade': i.quantidade,
-            })
+        .map<Map<String, dynamic>>(
+          (i) => {'produtoId': i.produtoId, 'quantidade': i.quantidade},
+        )
         .toList();
 
     // 🔹 Calcula o total do pedido via util
@@ -181,10 +144,7 @@ class _CadastroPedidoState extends State<CadastroPedido> {
       observacoes: _observacoesController.text,
     );
 
-    final pedidoId = await _pedidoController.insert(
-      novoPedido,
-      _itensDoPedido,
-    );
+    final pedidoId = await _pedidoController.insert(novoPedido, _itensDoPedido);
 
     if (!mounted) return;
 
@@ -221,19 +181,22 @@ class _CadastroPedidoState extends State<CadastroPedido> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Dados do Pedido', style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                'Dados do Pedido',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _numeroMesaController,
                 decoration: const InputDecoration(
-                  labelText: 'Nº da Mesa',
+                  labelText: 'Nº da Comanda',
                   border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.table_restaurant),
+                  prefixIcon: Icon(Icons.confirmation_number_outlined),
                 ),
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 16),
-              TextFormField(
+              /*TextFormField(
                 controller: _clienteIdController,
                 decoration: const InputDecoration(
                   labelText: 'ID do Cliente (Opcional)',
@@ -241,7 +204,7 @@ class _CadastroPedidoState extends State<CadastroPedido> {
                   prefixIcon: Icon(Icons.person),
                 ),
                 keyboardType: TextInputType.number,
-              ),
+              ),*/
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: _statusSelecionado,
@@ -250,14 +213,23 @@ class _CadastroPedidoState extends State<CadastroPedido> {
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.info_outline),
                 ),
-                items: const [
-                  'Aberto',
-                  'Em preparação',
-                  'Pronto',
-                  'Entregue',
-                  'Finalizado',
-                ].map((label) => DropdownMenuItem(value: label, child: Text(label))).toList(),
-                onChanged: (value) => setState(() => _statusSelecionado = value!),
+                items:
+                    const [
+                          'Aberto',
+                          'Em preparação',
+                          'Pronto',
+                          'Entregue',
+                          'Finalizado',
+                        ]
+                        .map(
+                          (label) => DropdownMenuItem(
+                            value: label,
+                            child: Text(label),
+                          ),
+                        )
+                        .toList(),
+                onChanged: (value) =>
+                    setState(() => _statusSelecionado = value!),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
@@ -267,13 +239,22 @@ class _CadastroPedidoState extends State<CadastroPedido> {
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.payment),
                 ),
-                items: const [
-                  'Dinheiro',
-                  'Cartão de Crédito',
-                  'Cartão de Débito',
-                  'Pix',
-                ].map((label) => DropdownMenuItem(value: label, child: Text(label))).toList(),
-                onChanged: (value) => setState(() => _metodoPagamentoSelecionado = value!),
+                items:
+                    const [
+                          'Dinheiro',
+                          'Cartão de Crédito',
+                          'Cartão de Débito',
+                          'Pix',
+                        ]
+                        .map(
+                          (label) => DropdownMenuItem(
+                            value: label,
+                            child: Text(label),
+                          ),
+                        )
+                        .toList(),
+                onChanged: (value) =>
+                    setState(() => _metodoPagamentoSelecionado = value!),
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -289,10 +270,17 @@ class _CadastroPedidoState extends State<CadastroPedido> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Itens do Pedido', style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    'Itens do Pedido',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   IconButton(
-                    icon: const Icon(Icons.add_circle, color: Colors.blue, size: 30),
-                    onPressed: _showAddItemDialog,
+                    icon: const Icon(
+                      Icons.add_circle,
+                      color: Colors.blue,
+                      size: 30,
+                    ),
+                    onPressed: _abrirSelecaoDeItens,
                   ),
                 ],
               ),
@@ -322,11 +310,18 @@ class _CadastroPedidoState extends State<CadastroPedido> {
                               children: [
                                 Text(
                                   'R\$ ${(item.quantidade * item.precoUnitario).toStringAsFixed(2)}',
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.delete, color: Colors.red),
-                                  onPressed: () => setState(() => _itensDoPedido.removeAt(index)),
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () => setState(
+                                    () => _itensDoPedido.removeAt(index),
+                                  ),
                                 ),
                               ],
                             ),
@@ -342,7 +337,10 @@ class _CadastroPedidoState extends State<CadastroPedido> {
                     child: Text(
                       'Total do Pedido: R\$ ${_totalGeral.toStringAsFixed(2)}',
                       style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w700, color: Colors.black87),
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black87,
+                      ),
                     ),
                   ),
                 ),

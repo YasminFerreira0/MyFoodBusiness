@@ -42,7 +42,7 @@ class _CadastroClienteState extends State<CadastroCliente> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Cadastro de Cliente')),
+      appBar: AppBar(title: const Text('Cadastro de Funcionarios')),
       drawer: MeuDrawer(),
       body: Form(
         key: _formKey,

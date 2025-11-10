@@ -34,21 +34,11 @@ class MeuDrawer extends Drawer {
           ),
           ListTile(
             leading: Icon(Icons.person_add),
-            title: Text('Cadastro de Cliente'),
+            title: Text('Cadastro de Funcionarios'),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => CadastroCliente()),
-              );
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.inventory),
-            title: Text('Cadastro de Produto'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CadastroProduto()),
               );
             },
           ),
@@ -70,8 +60,18 @@ class MeuDrawer extends Drawer {
             },
           ),
           ListTile(
+            leading: Icon(Icons.inventory),
+            title: Text('Cadastro do Cardápio'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CadastroProduto()),
+              );
+            },
+          ),
+          ListTile(
             leading: Icon(Icons.list),
-            title: Text('Listagem de Produtos'),
+            title: Text('Cardápio'),
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => ProdutoListPage()));
             },

@@ -38,7 +38,7 @@ class _ProdutoListPageState extends State<ProdutoListPage> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMsg = 'Erro ao carregar produtos: $e';
+        _errorMsg = 'Erro ao carregar itens do cardápio: $e';
       });
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -51,12 +51,12 @@ class _ProdutoListPageState extends State<ProdutoListPage> {
     if (ok) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Produto excluído.')));
+      ).showSnackBar(const SnackBar(content: Text('Item do Cardápio excluído.')));
       _carregarProdutos();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Erro ao excluir produto.'),
+          content: Text('Erro ao excluir item do cardápio.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -67,7 +67,7 @@ class _ProdutoListPageState extends State<ProdutoListPage> {
     return showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Excluir Produto'),
+        title: const Text('Excluir Item do Cardápio'),
         content: Text('Tem certeza que deseja excluir "${p.nome}"?'),
         actions: [
           TextButton(
@@ -111,7 +111,7 @@ class _ProdutoListPageState extends State<ProdutoListPage> {
     }
 
     if (_produtos.isEmpty) {
-      return const Center(child: Text('Nenhum produto cadastrado.'));
+      return const Center(child: Text('Nenhum Item cadastrado.'));
     }
 
     return ListView.builder(
@@ -183,7 +183,7 @@ class _ProdutoListPageState extends State<ProdutoListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lista de Produtos'),
+        title: const Text('Itens do Cardápio'),
         backgroundColor: Colors.red,
         centerTitle: true,
       ),

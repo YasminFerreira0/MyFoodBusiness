@@ -91,7 +91,7 @@ class HomePage extends StatelessWidget {
                           padding: const EdgeInsets.all(20),
                         ),
                       ),
-                      Text('Cadastrar\n   Pratos',
+                      Text('Cadastrar\ndo Cardápio',
                         style: theme.textTheme.bodyMedium, 
                       ),
                     ],

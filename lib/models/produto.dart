@@ -34,4 +34,11 @@ class Produto {
       descricao: map["descricao"]
     );
   }
+
+  Produto.empty()
+      : id = 0,
+        nome = '',
+        preco = 0.0,
+        categoria = CategoriaProduto.outro,
+        descricao = null;
 }
