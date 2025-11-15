@@ -78,6 +78,7 @@ class _CadastroProdutoState extends State<CadastroProduto> {
                   return null;
                 },
               ),
+              const SizedBox(height: 14),
               TextFormField(
                 controller: _precoController,
                 decoration: const InputDecoration(labelText: 'Preço'),
@@ -94,6 +95,7 @@ class _CadastroProdutoState extends State<CadastroProduto> {
                   return null;
                 },
               ),
+              const SizedBox(height: 14),
               DropdownButtonFormField<CategoriaProduto>(
                 value: _categoriaSelecionada,
                 decoration: const InputDecoration(labelText: 'Categoria'),
@@ -117,6 +119,7 @@ class _CadastroProdutoState extends State<CadastroProduto> {
                   return null;
                 },
               ),
+              const SizedBox(height: 14),
               TextFormField(
                 controller: _descricaoController,
                 decoration: const InputDecoration(labelText: 'Descrição'),

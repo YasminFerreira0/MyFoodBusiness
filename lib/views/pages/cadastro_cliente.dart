@@ -60,6 +60,7 @@ class _CadastroClienteState extends State<CadastroCliente> {
                   return null;
                 },
               ),
+              const SizedBox(height: 14),
               TextFormField(
                 controller: _telefoneController,
                 decoration: const InputDecoration(labelText: 'Telefone'),
@@ -71,6 +72,7 @@ class _CadastroClienteState extends State<CadastroCliente> {
                   return null;
                 },
               ),
+              const SizedBox(height: 14),
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
@@ -82,6 +84,7 @@ class _CadastroClienteState extends State<CadastroCliente> {
                   return null;
                 },
               ),
+              const SizedBox(height: 14),
               TextFormField(
                 controller: _cpfController,
                 decoration: const InputDecoration(labelText: 'CPF'),
