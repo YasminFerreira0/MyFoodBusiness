@@ -1,8 +1,9 @@
-import 'package:app/views/pages/cadastro_produto.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/drawer/app_drawer.dart';
 import 'package:app/controllers/produto_controller.dart';
 import 'package:app/models/produto.dart';
+import 'package:app/views/pages/cadastro_produto.dart';
+import 'package:app/views/pages/editar_produto.dart';
 
 class ProdutoListPage extends StatefulWidget {
   const ProdutoListPage({super.key});
@@ -49,9 +50,9 @@ class _ProdutoListPageState extends State<ProdutoListPage> {
     final ok = await _controller.delete(id);
     if (!mounted) return;
     if (ok) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Item do Cardápio excluído.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Item do Cardápio excluído.')),
+      );
       _carregarProdutos();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -76,11 +77,29 @@ class _ProdutoListPageState extends State<ProdutoListPage> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+            child: const Text(
+              'Excluir',
+              style: TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _abrirEdicao(Produto p) async {
+    if (p.id == null) return;
+
+    final atualizado = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EditarProdutoPage(produto: p),
+      ),
+    );
+
+    if (atualizado == true) {
+      _carregarProdutos();
+    }
   }
 
   Widget _buildBody() {
@@ -124,7 +143,7 @@ class _ProdutoListPageState extends State<ProdutoListPage> {
         final nome = p.nome.isNotEmpty ? p.nome : '(Sem nome)';
         final preco = (p.preco as num).toDouble();
         final categoria = p.categoria.label;
-        final desc = p.descricao ?? 'Sem descrição';  
+        final desc = p.descricao ?? 'Sem descrição';
 
         return Card(
           elevation: 3,
@@ -133,24 +152,35 @@ class _ProdutoListPageState extends State<ProdutoListPage> {
             borderRadius: BorderRadius.circular(12),
           ),
           child: ListTile(
+            onTap: () => _abrirEdicao(p),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 10,
             ),
             leading: CircleAvatar(
               backgroundColor: Colors.red,
-              child: Text(id, style: const TextStyle(color: Colors.white),),
+              child: Text(
+                id,
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
             title: Text(
               nome,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
             ),
             subtitle: Padding(
               padding: const EdgeInsets.only(top: 6.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(desc, maxLines: 2, overflow: TextOverflow.ellipsis),
+                  Text(
+                    desc,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: 4),
                   Text('Categoria: $categoria'),
                   const SizedBox(height: 4),
@@ -164,13 +194,26 @@ class _ProdutoListPageState extends State<ProdutoListPage> {
                 ],
               ),
             ),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              tooltip: 'Excluir',
-              onPressed: () async {
-                final ok = await _confirmarExclusao(p);
-                if (ok == true && p.id != null) _excluirProduto(p.id!);
-              },
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  tooltip: 'Editar',
+                  onPressed: () => _abrirEdicao(p),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  color: Colors.red,
+                  tooltip: 'Excluir',
+                  onPressed: () async {
+                    final ok = await _confirmarExclusao(p);
+                    if (ok == true && p.id != null) {
+                      _excluirProduto(p.id!);
+                    }
+                  },
+                ),
+              ],
             ),
             isThreeLine: true,
           ),
@@ -184,17 +227,24 @@ class _ProdutoListPageState extends State<ProdutoListPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Itens do Cardápio'),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.red, // pode trocar depois pra usar o theme
         centerTitle: true,
       ),
       drawer: MeuDrawer(),
-      body: RefreshIndicator(onRefresh: _carregarProdutos, child: _buildBody()),
+      body: RefreshIndicator(
+        onRefresh: _carregarProdutos,
+        child: _buildBody(),
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CadastroProduto()),
+            MaterialPageRoute(
+              builder: (context) => const CadastroProduto(),
+            ),
           );
+          // se cadastrou algo, recarrega a lista quando voltar
+          _carregarProdutos();
         },
         backgroundColor: Colors.red,
         child: const Icon(Icons.add),

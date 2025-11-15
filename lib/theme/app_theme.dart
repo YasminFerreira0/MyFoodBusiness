@@ -80,6 +80,7 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: scheme.primary,
           foregroundColor: scheme.onPrimary,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           minimumSize: const Size(48, 44),
           textStyle: const TextStyle(fontWeight: FontWeight.w600),
@@ -96,6 +97,7 @@ class AppTheme {
         fillColor: scheme.surface,
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         hintStyle: TextStyle(color: scheme.onSurface.withAlpha((0.5 * 255).round())),
+        
         labelStyle: TextStyle(color: scheme.onSurface),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),

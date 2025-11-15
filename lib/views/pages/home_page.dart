@@ -20,10 +20,6 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 70),
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
-            child: Text(
-              'Recomendações',
-              style: theme.textTheme.headlineSmall,
-            ),
           ),
           const SizedBox(height: 15),
           Container(),
