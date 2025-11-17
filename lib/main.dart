@@ -15,9 +15,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'MyFoodBusiness',
-      theme: AppTheme.light(),     // claro
-      darkTheme: AppTheme.dark(),  // escuro (opcional, já pronto)
-      themeMode: ThemeMode.system, // SO decide; mude para .light/.dark se quiser fixo
+      theme: AppTheme.light(),    
+      darkTheme: AppTheme.dark(),  
+      themeMode: ThemeMode.system, 
       home: const SplashPage(),
       routes: {
         '/home': (context) => const HomePage(),

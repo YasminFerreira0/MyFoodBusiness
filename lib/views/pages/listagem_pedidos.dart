@@ -2,6 +2,7 @@ import 'package:app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:app/controllers/item_pedido_controller.dart';
 import 'package:app/models/item_pedido.dart';
+import 'package:app/views/pages/editar_pedido.dart';
 
 class PedidosListPage extends StatefulWidget {
   const PedidosListPage({super.key});
@@ -13,7 +14,7 @@ class PedidosListPage extends StatefulWidget {
 class _PedidosListPageState extends State<PedidosListPage> {
   final ItemPedidoController _itemCtrl = ItemPedidoController();
 
-  // pedidoId -> itens
+  
   Map<int, List<ItemPedido>> _pedidos = {};
   bool _isLoading = true;
 
@@ -26,17 +27,16 @@ class _PedidosListPageState extends State<PedidosListPage> {
   Future<void> _carregarPedidos() async {
     setState(() => _isLoading = true);
 
-    // carrega todos os itens e agrupa por pedidoId (sem usar DAO direto)
+    
     final itens = await _itemCtrl.list();
     final agrupado = <int, List<ItemPedido>>{};
     for (final it in itens) {
       final pid = it.pedidoId;
-      if (pid == null) continue; // ignora itens sem vínculo
+      if (pid == null) continue; 
       agrupado.putIfAbsent(pid, () => []);
       agrupado[pid]!.add(it);
     }
 
-    // ordena os pedidos por id desc (opcional) e itens por id asc
     final sortedKeys = agrupado.keys.toList()..sort((a, b) => b.compareTo(a));
     final sortedMap = <int, List<ItemPedido>>{};
     for (final k in sortedKeys) {
@@ -59,7 +59,7 @@ class _PedidosListPageState extends State<PedidosListPage> {
   }
 
   Future<void> _excluirPedido(int pedidoId) async {
-    // Sem alterar controllers: apaga todos os itens daquele pedido aqui na tela
+  
     final itens = _pedidos[pedidoId] ?? [];
     var ok = true;
     for (final it in itens) {
@@ -109,6 +109,20 @@ class _PedidosListPageState extends State<PedidosListPage> {
     );
   }
 
+  void _editarPedido(int pedidoId) {
+    Navigator.of(context)
+        .push<bool>(
+      MaterialPageRoute(
+        builder: (_) => EditarPedidoPage(pedidoId: pedidoId),
+      ),
+    )
+        .then((alterou) {
+      if (alterou == true) {
+        _carregarPedidos();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasPedidos = _pedidos.isNotEmpty;
@@ -137,10 +151,20 @@ class _PedidosListPageState extends State<PedidosListPage> {
                         subtitle: Text(
                           '${Utils.calcTotalItensPorPedido(itens)} itens(m) • Total: R\$ ${total.toStringAsFixed(2)}',
                         ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => _confirmarExclusao(pedidoId),
-                          tooltip: 'Excluir pedido',
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit, color: Colors.blue),
+                              onPressed: () => _editarPedido(pedidoId),
+                              tooltip: 'Editar pedido',
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => _confirmarExclusao(pedidoId),
+                              tooltip: 'Excluir pedido',
+                            ),
+                          ],
                         ),
                         children: [
                           const Divider(height: 1),
@@ -161,7 +185,7 @@ class _PedidosListPageState extends State<PedidosListPage> {
                                         ),
                                       ),
                                       Text(
-                                        'R\$ ${(item.precoUnitario*item.quantidade).toStringAsFixed(2)}',
+                                        'R\$ ${(item.precoUnitario * item.quantidade).toStringAsFixed(2)}',
                                         style: const TextStyle(fontWeight: FontWeight.w600),
                                       ),
                                     ],
